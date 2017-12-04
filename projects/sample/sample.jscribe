@@ -1,0 +1,12 @@
+[jscribe]
+version_major=0
+version_minor=0
+version_patch=1
+
+[sources]
+plc=1
+
+[source-plc]
+ip=192.168.5.10
+rack=0
+slot=0
