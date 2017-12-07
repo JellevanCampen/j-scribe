@@ -1,6 +1,6 @@
 #include "jscribe_app.h"
 #include "imgui_box_shadow.h"
-
+#include "modules\sample_module\sample_module.h"
 #include <iostream>
 
 namespace j {
@@ -11,6 +11,10 @@ JScribeApp::JScribeApp() {
   cout << "================" << endl;
   InitializeOpenGL();
   InitializeImGUI();
+
+  // Add a sample module for demonstration purposes
+  SampleModule* sampleModule = new SampleModule{"MySampleModule"};
+  modules_.push_back(sampleModule);
 }
 
 JScribeApp::~JScribeApp() {
@@ -123,20 +127,46 @@ void JScribeApp::Update() {
 }
 
 void JScribeApp::Draw() {
-  bool show_test_window = true;
-  bool show_another_window = false;
-  ImVec4 clear_color = ImVec4(0.95f, 0.95f, 0.95f, 1.f);
-
   // Close the application if the window is closed
   if (glfwWindowShouldClose(window_)) { running_ = false; }
 
+  // Process all window events
   glfwPollEvents();
 
-  // Draw the UI
+  // Draw all modules
   ImGui_ImplGlfwGL3_NewFrame();
   for (auto m : modules_) {
     m->Draw();
   }
+
+  // Render ImGUI to the framebuffer
+  int display_w, display_h;
+  glfwGetFramebufferSize(window_, &display_w, &display_h);
+  glViewport(0, 0, display_w, display_h);
+  ImVec4 clear_color = ImVec4(0.95f, 0.95f, 0.95f, 1.f);
+  glClearColor(clear_color.x, clear_color.y, clear_color.z, clear_color.w);
+  glClear(GL_COLOR_BUFFER_BIT);
+  ImGui::Render();
+
+  // Swap the buffers and sync to the window refresh rate
+  glfwSwapBuffers(window_);
+  glfwSwapInterval(1);
+}
+
+void JScribeApp::GLFWKeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
+  std::cout << "Key callback called" << std::endl;
+  if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) { glfwSetWindowShouldClose(window, GLFW_TRUE); }
+}
+
+void JScribeApp::GLFWErrorCallback(int error, const char* description)
+{
+  std::cout << "ERROR (GLFW" << error << "): " << description << std::endl;
+}
+
+void JScribeApp::DrawImGUISampleWindows() {
+  bool show_test_window = true;
+  bool show_another_window = false;
+  ImVec4 clear_color = ImVec4(0.95f, 0.95f, 0.95f, 1.f);
 
   // 1. Show a simple window
   // Tip: if we don't call ImGui::Begin()/ImGui::End() the widgets appears in a window automatically called "Debug"
@@ -166,28 +196,6 @@ void JScribeApp::Draw() {
   }
 
   ImGui::drawShadowTestExampleWindow();
-
-  // Rendering
-  int display_w, display_h;
-  glfwGetFramebufferSize(window_, &display_w, &display_h);
-  glViewport(0, 0, display_w, display_h);
-  glClearColor(clear_color.x, clear_color.y, clear_color.z, clear_color.w);
-  glClear(GL_COLOR_BUFFER_BIT);
-  ImGui::Render();
-
-  // Swap the buffers and sync to the window refresh rate
-  glfwSwapBuffers(window_);
-  glfwSwapInterval(1);
-}
-
-void JScribeApp::GLFWKeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
-  std::cout << "Key callback called" << std::endl;
-  if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) { glfwSetWindowShouldClose(window, GLFW_TRUE); }
-}
-
-void JScribeApp::GLFWErrorCallback(int error, const char* description)
-{
-  std::cout << "ERROR (GLFW" << error << "): " << description << std::endl;
 }
 
 } // namespace

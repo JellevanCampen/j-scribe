@@ -10,9 +10,9 @@ namespace j {
 namespace scribe {
 
 // Interface for j-scribe modules
-  class Module {
+class Module {
  protected:
-  Module(string name, string moduletype) : name_{name}, moduletype_{ moduletype } { };
+  Module(string name, const string moduletype) : name_{name}, moduletype_{ moduletype } { };
   virtual ~Module() { }
   const string& GetName() const { return name_; }
   void SetName(const string& name) { name_ = name; }

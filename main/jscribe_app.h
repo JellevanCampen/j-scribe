@@ -38,6 +38,8 @@ private:
   const string applicationName_{ "J-Scribe v0.0.1" };
   const int applicationWidth_{ 1600 };
   const int applicationHeight_{ 900 };
+
+  void DrawImGUISampleWindows();
 };
 
 } // namespace
